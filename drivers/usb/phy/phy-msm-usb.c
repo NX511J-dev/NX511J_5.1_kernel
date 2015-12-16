@@ -52,6 +52,10 @@
 
 #include <linux/msm-bus.h>
 
+#ifdef CONFIG_ZTEMT_BQ24296M_CHARGE
+	#include "linux/power/bq24296m_charger.h"
+#endif
+
 #define MSM_USB_BASE	(motg->regs)
 #define MSM_USB_PHY_CSR_BASE (motg->phy_csr_regs)
 
@@ -94,8 +98,12 @@ unsigned int lpm_disconnect_thresh = 1000;
 module_param(lpm_disconnect_thresh , uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(lpm_disconnect_thresh,
 	"Delay before entering LPM on USB disconnect");
-
-static bool floated_charger_enable;
+#if defined(CONFIG_ZTEMT_COMM_CHARGE)    \
+ || defined(CONFIG_ZTEMT_BQ24296M_CHARGE) 
+	static bool floated_charger_enable = 1;
+#else
+	static bool floated_charger_enable;
+#endif
 module_param(floated_charger_enable , bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(floated_charger_enable,
 	"Whether to enable floated charger");
@@ -2813,6 +2821,9 @@ static void msm_chg_detect_work(struct work_struct *w)
 		dev_dbg(phy->dev, "chg_type = %s\n",
 			chg_to_string(motg->chg_type));
 		queue_work(system_nrt_wq, &motg->sm_work);
+#ifdef CONFIG_ZTEMT_BQ24296M_CHARGE
+		bq24296_notify_charger(motg->chg_type);
+#endif
 		return;
 	default:
 		return;
@@ -3019,8 +3030,12 @@ static void msm_otg_sm_work(struct work_struct *w)
 					pm_runtime_put_sync(otg->phy->dev);
 					break;
 				case USB_FLOATED_CHARGER:
+					#if (defined CONFIG_ZTEMT_COMM_CHARGE) || (defined CONFIG_ZTEMT_BQ24296M_CHARGE) 
+					msm_otg_notify_charger(motg,500);
+					#else
 					msm_otg_notify_charger(motg,
 							IDEV_CHG_MAX);
+					#endif
 					pm_runtime_put_noidle(otg->phy->dev);
 					pm_runtime_suspend(otg->phy->dev);
 					break;

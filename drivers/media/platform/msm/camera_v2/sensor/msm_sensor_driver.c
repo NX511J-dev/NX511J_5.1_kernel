@@ -633,9 +633,11 @@ int32_t msm_sensor_driver_probe(void *setting,
 	struct msm_camera_cci_client        *cci_client = NULL;
 	struct msm_camera_sensor_slave_info *slave_info = NULL;
 	struct msm_camera_slave_info        *camera_info = NULL;
-
+	uint16_t  temp = 0XFF;
 	unsigned long                        mount_pos = 0;
+
 	uint32_t                             is_yuv;
+
 
 	/* Validate input parameters */
 	if (!setting) {
@@ -690,8 +692,7 @@ int32_t msm_sensor_driver_probe(void *setting,
 		slave_info->power_setting_array.power_setting =
 			compat_ptr(setting32.power_setting_array.power_setting);
 		slave_info->power_setting_array.power_down_setting =
-			compat_ptr(setting32.
-				power_setting_array.power_down_setting);
+			compat_ptr(setting32.power_setting_array.power_down_setting);
 		slave_info->is_init_params_valid =
 			setting32.is_init_params_valid;
 		slave_info->sensor_init_params = setting32.sensor_init_params;
@@ -709,14 +710,15 @@ int32_t msm_sensor_driver_probe(void *setting,
 	}
 
 	/* Print slave info */
-	CDBG("camera id %d", slave_info->camera_id);
-	CDBG("slave_addr 0x%x", slave_info->slave_addr);
-	CDBG("addr_type %d", slave_info->addr_type);
-	CDBG("sensor_id_reg_addr 0x%x",
+	pr_err("wdy current  sensor_name=%s\n",slave_info->sensor_name);
+	pr_err("camera id %d\n", slave_info->camera_id);
+	pr_err("slave_addr 0x%x\n", slave_info->slave_addr);
+	pr_err("addr_type %d\n", slave_info->addr_type);
+	pr_err("sensor_id_reg_addr 0x%x\n",
 		slave_info->sensor_id_info.sensor_id_reg_addr);
-	CDBG("sensor_id 0x%x", slave_info->sensor_id_info.sensor_id);
-	CDBG("size %d", slave_info->power_setting_array.size);
-	CDBG("size down %d", slave_info->power_setting_array.size_down);
+	pr_err("sensor_id 0x%x\n", slave_info->sensor_id_info.sensor_id);
+	pr_err("size %d\n", slave_info->power_setting_array.size);
+	pr_err("size down %d\n", slave_info->power_setting_array.size_down);
 
 	if (slave_info->is_init_params_valid) {
 		CDBG("position %d",
@@ -742,7 +744,7 @@ int32_t msm_sensor_driver_probe(void *setting,
 		goto free_slave_info;
 	}
 
-	CDBG("s_ctrl[%d] %p", slave_info->camera_id, s_ctrl);
+	pr_err("wdy s_ctrl[%d] %p\n", slave_info->camera_id, s_ctrl);
 
 	if (s_ctrl->is_probe_succeed == 1) {
 		/*
@@ -874,8 +876,19 @@ int32_t msm_sensor_driver_probe(void *setting,
 		goto free_camera_info;
 	}
 
-	pr_err("%s probe succeeded", slave_info->sensor_name);
+	pr_err("wdy camera sensor = %s probe succeeded\n", slave_info->sensor_name);
+	//add by wangdeyong to clear flash sensor regulator 0XA0 again
 
+	s_ctrl->sensor_i2c_client->cci_client->sid=0X63;
+	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write(s_ctrl->sensor_i2c_client,0X0A,0X00,MSM_CAMERA_I2C_BYTE_ADDR);
+	if(rc<0)
+		pr_err("wdy clear 0XA0 failed  rc=%d\n",rc);
+	rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(s_ctrl->sensor_i2c_client,0X0A,&temp,MSM_CAMERA_I2C_BYTE_ADDR);
+	if(rc<0)
+		pr_err("wdy read  0XA0 failed  rc=%d\n",rc);
+	pr_err("wdy clear  flash regulator now  AF  0X0A= 0X%x\n",temp);
+	s_ctrl->sensor_i2c_client->cci_client->sid=slave_info->slave_addr >> 1;
+	//add by wangdeyong to clear flash sensor regulator 0XA0 again
 	/*
 	  Set probe succeeded flag to 1 so that no other camera shall
 	 * probed on this slot

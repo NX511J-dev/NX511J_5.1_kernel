@@ -43,6 +43,10 @@
 #define SCM_EDLOAD_MODE			0X01
 #define SCM_DLOAD_CMD			0x10
 
+/* This flag must be the same as in aboot */
+#ifdef CONFIG_ZTEMT_PANIC_BOOTMODE
+#define PANIC_MODE           0x77665523
+#endif
 
 static int restart_mode;
 void *restart_reason;
@@ -188,6 +192,12 @@ void msm_set_restart_mode(int mode)
 }
 EXPORT_SYMBOL(msm_set_restart_mode);
 
+void msm_set_download_mode(int mode)
+{
+	download_mode = mode;
+}
+EXPORT_SYMBOL(msm_set_download_mode);
+
 /*
  * Force the SPMI PMIC arbiter to shutdown so that no more SPMI transactions
  * are sent from the MSM to the PMIC.  This is required in order to avoid an
@@ -225,6 +235,14 @@ static void msm_restart_prepare(const char *cmd)
 
 	set_dload_mode(download_mode &&
 			(in_panic || restart_mode == RESTART_DLOAD));
+#endif
+
+#ifdef CONFIG_ZTEMT_PANIC_BOOTMODE
+	need_warm_reset = (get_dload_mode() ||
+				(cmd != NULL && cmd[0] != '\0') || in_panic);
+#else
+	need_warm_reset = (get_dload_mode() ||
+				(cmd != NULL && cmd[0] != '\0'));
 #endif
 
 	if (qpnp_pon_check_hard_reset_stored()) {
@@ -275,6 +293,13 @@ static void msm_restart_prepare(const char *cmd)
 			__raw_writel(0x77665501, restart_reason);
 		}
 	}
+
+#ifdef CONFIG_ZTEMT_PANIC_BOOTMODE
+	if(in_panic) {
+		printk(KERN_EMERG" set panic reboot reason\n");
+		__raw_writel(PANIC_MODE, restart_reason);
+	}
+#endif
 
 	flush_cache_all();
 

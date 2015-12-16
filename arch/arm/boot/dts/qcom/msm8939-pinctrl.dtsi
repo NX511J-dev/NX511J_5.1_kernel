@@ -58,7 +58,8 @@
 				bias-disable; /* No PULL */
 			};
 		};
-
+//ztemt changed by chengdongsheng ALL REMOVERD TO qcom/zte/project/xxx-nfc-pinctrl.dtsi
+/*
 		pmx_rd_nfc_int{
 			qcom,pins = <&gp 21>;
 			qcom,pin-func = <0>;
@@ -92,6 +93,8 @@
 				bias-disable;
 			};
 		};
+*/
+/*comment by congshan start*/
 
 		blsp1_uart1_active {
 			qcom,pins = <&gp 0>, <&gp 1>, <&gp 2>, <&gp 3>;
@@ -116,6 +119,8 @@
 			        bias-disable;
 			};
 		};
+
+/*comment by congshan end*/
 
 		sdhc2_cd_pin {
 			qcom,pins = <&gp 38>;
@@ -242,6 +247,26 @@
 				bias-disable;	      /* No PULL */
 			};
 		};
+
+		// ztemt add by nubia start
+		// add i2c qup3 (gpio10 gpio11)
+		pmx_i2c_3 {
+			qcom,pins = <&gp 10>, <&gp 11>; /* SDA, SCL */
+			qcom,num-grp-pins = <2>;
+			qcom,pin-func = <2>;
+			label = "pmx_i2c_3";
+
+			i2c_3_active: i2c_3_active {
+				drive-strength = <2>;
+				bias-disable;
+			};
+
+			i2c_3_sleep: i2c_3_sleep {
+				drive-strength = <2>;
+				bias-disable;
+			};
+		};
+		// ztemt add by nubia end
 
 		pmx_i2c_4 {
 			qcom,pins = <&gp 14>, <&gp 15>; /* SDA, SCL */
@@ -691,6 +716,7 @@
 			};
 		};
 
+#if 0
 		pmx_mdss_te: pmx_mdss_te {
 			label = "mdss-te-pin";
 			qcom,pin-func = <1>;
@@ -705,6 +731,7 @@
 				input-debounce = <0>;
 			};
 		};
+#endif
 
 		/* QDSD pin type */
 		qdsd: qdsd {
@@ -945,7 +972,8 @@
 				bias-pull-down; /* PULL DOWN */
 			};
 		};
-
+/*comment by congshan start*/
+#if 0
 		cam_sensor_rear {
 			/* RESET, STANDBY */
 			qcom,pins =  <&gp 35>, <&gp 34>;
@@ -1015,6 +1043,8 @@
 				bias-pull-down = <0>; /* PULL DOWN */
 			};
 		};
+#endif
+/*comment by congshan end*/
 
 		/* CoreSight */
 		tpiu_seta_1 {

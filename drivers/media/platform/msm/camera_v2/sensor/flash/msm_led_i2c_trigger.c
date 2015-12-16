@@ -217,6 +217,9 @@ int msm_flash_led_init(struct msm_led_flash_ctrl_t *fctrl)
 		if (rc < 0)
 			pr_err("%s:%d failed\n", __func__, __LINE__);
 	}
+	//ztemt added by congshan start
+     rc = 0;	
+	//ztemt added by congshan start
 	fctrl->led_state = MSM_CAMERA_LED_INIT;
 	return rc;
 }
@@ -239,6 +242,15 @@ int msm_flash_led_release(struct msm_led_flash_ctrl_t *fctrl)
 		pr_err("%s:%d invalid led state\n", __func__, __LINE__);
 		return -EINVAL;
 	}
+	//added by congshan start
+	if (fctrl->flash_i2c_client && fctrl->reg_setting->release_setting) {
+		rc = fctrl->flash_i2c_client->i2c_func_tbl->i2c_write_table(
+			fctrl->flash_i2c_client,
+			fctrl->reg_setting->release_setting);
+		if (rc < 0)
+			pr_err("%s:%d failed\n", __func__, __LINE__);
+	}
+	//added by congshan end
 	gpio_set_value_cansleep(
 		power_info->gpio_conf->gpio_num_info->
 		gpio_num[SENSOR_GPIO_FL_EN],
@@ -289,6 +301,7 @@ int msm_flash_led_off(struct msm_led_flash_ctrl_t *fctrl)
 	struct msm_camera_sensor_board_info *flashdata = NULL;
 	struct msm_camera_power_ctrl_t *power_info = NULL;
 
+	pr_info("%s:%d called\n", __func__, __LINE__);
 	if (!fctrl) {
 		pr_err("%s:%d fctrl NULL\n", __func__, __LINE__);
 		return -EINVAL;
@@ -793,7 +806,10 @@ int msm_flash_probe(struct platform_device *pdev,
 			&msm_sensor_cci_func_tbl;
 
 	rc = msm_led_flash_create_v4lsubdev(pdev, fctrl);
-
+	//add by wangdeyong  to clear flash sensor regulator
+	msm_flash_led_init(fctrl);
+	msm_flash_led_release(fctrl);
+	//add by wangdeyong  to clear flash sensor regulator
 	CDBG("%s: probe success\n", __func__);
 	return 0;
 

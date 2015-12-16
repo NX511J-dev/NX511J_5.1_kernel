@@ -54,6 +54,14 @@ enum msm_sensor_resolution_t {
 	MSM_SENSOR_RES_5,
 	MSM_SENSOR_RES_6,
 	MSM_SENSOR_RES_7,
+	MSM_SENSOR_RES_8, // zte-fuyipeng add the res
+	MSM_SENSOR_RES_9,
+	MSM_SENSOR_RES_10,
+	MSM_SENSOR_RES_11,
+	MSM_SENSOR_RES_12,
+	MSM_SENSOR_RES_13,
+	MSM_SENSOR_RES_14,
+	MSM_SENSOR_RES_15,
 	MSM_SENSOR_INVALID_RES,
 };
 
@@ -401,6 +409,9 @@ enum msm_sensor_cfg_type_t {
 	CFG_SET_AUTOFOCUS,
 	CFG_CANCEL_AUTOFOCUS,
 	CFG_SET_STREAM_TYPE,
+	 // ZTEMT: peijun add for setBacklight -----start
+	CFG_SET_ZTE_BACKLIGHT,
+	// ZTEMT: peijun add for setBacklight -----end
 };
 
 enum msm_actuator_cfg_type_t {
@@ -412,6 +423,12 @@ enum msm_actuator_cfg_type_t {
 	CFG_ACTUATOR_POWERDOWN,
 	CFG_ACTUATOR_POWERUP,
 	CFG_ACTUATOR_INIT,
+	// ZTEMT: fuyipeng add for manual AF -----start
+	CFG_SET_ACTUATOR_NAME,
+    // ZTEMT: fuyipeng add for manual AF -----end
+    /*ZTEMT:jixd add af infinity calibration -----start*/
+    CFG_SET_INFINITY_POS,
+   /*ZTEMT:jixd add af infinity calibration -----end*/  
 };
 
 enum msm_ois_cfg_type_t {
@@ -536,12 +553,16 @@ struct msm_actuator_cfg_data {
 	int cfgtype;
 	uint8_t is_af_supported;
 	union {
-		struct msm_actuator_move_params_t move;
-		struct msm_actuator_set_info_t set_info;
-		struct msm_actuator_get_info_t get_info;
-		struct msm_actuator_set_position_t setpos;
-		enum af_camera_name cam_name;
-	} cfg;
+        struct msm_actuator_move_params_t move;
+        struct msm_actuator_set_info_t set_info;
+        struct msm_actuator_get_info_t get_info;
+        struct msm_actuator_set_position_t setpos;
+        enum af_camera_name cam_name;
+        // ZTEMT: fuyipeng add for manual AF -----start
+        char *act_name;
+        // ZTEMT: fuyipeng add for manual AF -----end
+        int infinity_pos;//ZTEMT:jixd add af infinity calibration 
+    } cfg;
 };
 
 enum msm_camera_led_config_t {
@@ -692,6 +713,10 @@ struct msm_actuator_cfg_data32 {
 		struct msm_actuator_get_info_t get_info;
 		struct msm_actuator_set_position_t setpos;
 		enum af_camera_name cam_name;
+		// ZTEMT: fuyipeng add for manual AF -----start
+             char *act_name;
+             // ZTEMT: fuyipeng add for manual AF -----end
+        int infinity_pos;//ZTEMT:jixd add af infinity calibration 
 	} cfg;
 };
 

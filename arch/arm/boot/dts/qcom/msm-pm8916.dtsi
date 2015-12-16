@@ -43,12 +43,13 @@
 				qcom,s2-type = <1>;
 				linux,code = <116>;
 			};
-
+/* Removed by Zhouqifang , Cause projects have independent volume down key.
 			qcom,pon_2 {
 				qcom,pon-type = <1>;
 				qcom,pull-up = <1>;
 				linux,code = <114>;
 			};
+*/
 		};
 
 		pm8916_mpps: mpps {
@@ -117,7 +118,7 @@
                         #address-cells = <1>;
                         #size-cells = <1>;
                         qcom,qpnp-rtc-write = <0>;
-                        qcom,qpnp-rtc-alarm-pwrup = <0>;
+                        qcom,qpnp-rtc-alarm-pwrup = <1>;
 
                         qcom,pm8916_rtc_rw@6000 {
                                 reg = <0x6000 0x100>;
