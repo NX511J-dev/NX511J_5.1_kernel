@@ -39,6 +39,13 @@ dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	msm8909-1gb-qrd-skua.dtb \
 	msm8909-1gb-cdp.dtb \
 	msm8909-1gb-mtp.dtb
+ifeq ($(CONFIG_MACH_ZTE_NX511J),y)
+dtb-$(CONFIG_ARCH_MSM8916) += msm8939-mtp-NX511J.dtb
+else ifeq ($(CONFIG_MACH_ZTE_NX511J_V3),y)
+dtb-$(CONFIG_ARCH_MSM8916) += msm8939-mtp-NX511J_V3.dtb
+else ifeq ($(CONFIG_MACH_ZTE_NX519J),y)
+dtb-$(CONFIG_ARCH_MSM8916) += msm8939-mtp-NX519J.dtb
+else
 dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8916-rumi.dtb \
 	msm8916-cdp.dtb \
@@ -88,6 +95,8 @@ dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8929-mtp-jdi-smb1360.dtb \
 	msm8929-mtp-wcd9306-smb1360.dtb \
 	msm8929-cdp-jdi.dtb
+endif
+
 dtb-$(CONFIG_ARCH_MSM8226) += msm8226-sim.dtb \
 	msm8226-fluid.dtb \
 	msm8226-v1-cdp.dtb \

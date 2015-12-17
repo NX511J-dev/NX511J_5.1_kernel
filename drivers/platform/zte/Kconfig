@@ -1,0 +1,37 @@
+# ZTE/Nubia configuration options
+
+config MACH_ZTE
+	bool "ZTE device"
+	depends on ARCH_MSM
+	help
+	  Support for ZTE products
+
+config MACH_ZTE_MSM8916
+	bool "ZTE MSM8916"
+	depends on ARCH_MSM8916
+	select MACH_ZTE
+	help
+	  Support for MSM8916 ZTE variants
+
+choice
+	prompt "ZTE board selection"
+
+	config MACH_ZTE_NX511J
+		bool "ZTE_NX511J board"
+		select MACH_ZTE_MSM8916
+		help
+		  Support for ZTE Nubia NX511J variant
+
+	config MACH_ZTE_NX511J_V3
+		bool "ZTE_NX511J_V3 board"
+		select MACH_ZTE_MSM8916
+		help
+		  Support for ZTE Nubia NX511J_V3 variant
+
+	config MACH_ZTE_NX519J
+		bool "ZTE_NX519J board"
+		select MACH_ZTE_MSM8916
+		help
+		  Support for ZTE Nubia NX519J variant
+
+endchoice
